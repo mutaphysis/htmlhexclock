@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>The day in hex colors</title>
+    <style>        
+        html, body {
+            height: 100%; margin: 0; padding: 0;   
+            overflow: hidden;
+        }
+        #canvas {
+            position: absolute;                    
+            width: 100%; height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="360" height="240"></canvas>        
+    
+    <script>
+        var maxHex = 0xFF;
+        var fill = function(x) { return ((""+x).length == 2) ? x : ("0"+x); };
+        var hexify = function(x) { return fill(parseInt((x*maxHex).toFixed(0)).toString(16)); };    
+        
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');        
+        
+        var canvasData = ctx.createImageData(canvas.width, canvas.height);
+        
+        var hours = 0;
+        var minutes = 0;
+        var seconds = 0;
+            
+        var draw = function () {                   
+            //var hex = "#" + hexify(hours/23) + hexify(minutes/59) + hexify((seconds)/59);
+
+            while (hours < 24) {
+                var x = hours%6 * 60 + seconds;
+                var y = Math.floor(hours/6) * 60 + minutes;
+    
+                var idx =  (x + y * canvas.width) * 4;
+    
+                canvasData.data[idx + 0] = Math.floor((hours/23)   * 255);
+                canvasData.data[idx + 1] = Math.floor((minutes/59) * 255);
+                canvasData.data[idx + 2] = Math.floor((seconds/59) * 255);
+                canvasData.data[idx + 3] = 255;
+        
+                seconds++;
+            
+            
+                if (seconds == 60) {
+                    seconds = 0;
+                    minutes++;
+                }
+            
+                if (minutes == 60) {
+                    minutes = 0;
+                    hours++;
+                }                     
+            }
+                
+            ctx.putImageData(canvasData, 0, 0);
+        };
+                
+        draw();
+    </script>
+</body>
+</html>
